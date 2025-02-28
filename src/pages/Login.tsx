@@ -69,7 +69,7 @@ const Login = () => {
                             {...register("email")}
                             id="emailInput"
                             autoComplete="email"
-                            type="text"
+                            type="email"
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.email && <div className="text-red-500">{errors.email.message}</div>}
