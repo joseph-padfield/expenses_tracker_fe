@@ -1,6 +1,7 @@
 import { SubmitHandler, useForm} from "react-hook-form"
 import { z } from "zod"
 import { zodResolver} from "@hookform/resolvers/zod"
+import { useState } from "react"
 
 const schema = z.object({
     "name": z.string(),
@@ -24,6 +25,8 @@ const Register = () => {
         },
         resolver: zodResolver(schema)
     })
+
+    const [successMessage, setSuccessMessage] = useState<string>("")
 
     const onSubmit: SubmitHandler<FormFields> = async (data: FormFields): Promise<void> => {
         try {
@@ -50,6 +53,7 @@ const Register = () => {
 
             setError("root", {message: errorMessage})
         }
+        setSuccessMessage("Successfully registered")
     }
 
     return (
@@ -58,6 +62,7 @@ const Register = () => {
                 <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
 
                 {errors.root && <div className="text-red-500 text-center mb-4">{errors.root.message}</div>}
+                {successMessage && <div className="text-green-500 text-center mb-4">{successMessage}</div>}
 
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-4">
@@ -98,10 +103,13 @@ const Register = () => {
                     <button
                         disabled={isSubmitting}
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+                        className="w-full bg-blue-500 text-white py-2 rounded-md mb-4 hover:bg-blue-600 transition"
                     >
                         {isSubmitting ? "Loading..." : "Submit"}
                     </button>
+                    <div className="flex justify-end w-full">
+                        <a href="/login" className="text-blue-500 hover:text-blue-600">Back to login</a>
+                    </div>
                 </form>
             </div>
         </div>

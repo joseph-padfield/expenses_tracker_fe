@@ -1,6 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
 
 const schema = z.object({
     email: z.string().email(),
@@ -23,6 +24,8 @@ const Login = () => {
         resolver: zodResolver(schema),
     })
 
+    const [successMessage, setSuccessMessage] = useState<string>("")
+
     const onSubmit: SubmitHandler<FormFields> = async (data: FormFields): Promise<void> => {
         try {
             const response: Response = await fetch(
@@ -44,6 +47,7 @@ const Login = () => {
 
             if (result.token) {
                 localStorage.setItem("token", result.token)
+                setSuccessMessage("Login successful!")
             }
 
         } catch (error) {
@@ -56,11 +60,12 @@ const Login = () => {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-xl shadow-md w-96">
                 <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
 
                 {errors.root && <div className="text-red-500 text-center mb-4">{errors.root.message}</div>}
+                {successMessage && <div className="text-green-500 text-center mb-4">{successMessage}</div>}
 
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-4">
@@ -89,10 +94,13 @@ const Login = () => {
                     <button
                         disabled={isSubmitting}
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+                        className="w-full bg-blue-500 text-white py-2 rounded-md mb-4 hover:bg-blue-600 transition"
                     >
                         {isSubmitting ? "Loading..." : "Submit"}
                     </button>
+                    <div className="flex justify-end w-full">
+                        <a href="/register" className="text-blue-500 hover:text-blue-600">Register</a>
+                    </div>
                 </form>
             </div>
         </div>
