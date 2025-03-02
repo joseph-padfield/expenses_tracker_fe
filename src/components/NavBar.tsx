@@ -1,9 +1,18 @@
+import { Link } from 'react-router-dom'
+
 const NavBar = () => {
 
     return (
-        <div className="nav-bar">
-            <h1>Nav Bar</h1>
-        </div>
+        <nav className="bg-blue-500 p-4 text-white">
+            <div className="container mx-auto flex justify-between">
+                <h1 className="text-xl font-bold">Expense Tracker</h1>
+                <div className="space-x-4">
+                    <Link to="/">Dashboard</Link>
+                    <Link to="/">Expenses</Link>
+                    <Link to="/">Settings</Link>
+                </div>
+            </div>
+        </nav>
     )
 }
 
