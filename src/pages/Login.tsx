@@ -48,8 +48,12 @@ const Login = () => {
                 throw new Error(result.error || "Invalid credentials")
             }
 
+            if (result.username) {
+                sessionStorage.setItem("username", result.username)
+            }
+
             if (result.token) {
-                localStorage.setItem("token", result.token)
+                sessionStorage.setItem("token", result.token)
                 setSuccessMessage("Login successful!")
                 navigate("/home")
             }
