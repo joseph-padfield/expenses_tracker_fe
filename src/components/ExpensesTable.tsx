@@ -1,43 +1,43 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 const ExpensesTable = () => {
     type Expense = {
-        id: number;
-        date: string;
-        description: string;
-        category_name: string;
-        amount: number;
-    };
+        id: number,
+        date: string,
+        description: string,
+        category_name: string,
+        amount: number
+    }
 
-    const navigate = useNavigate();
-    const [expenses, setExpenses] = useState<Expense[]>([]);
+    const navigate = useNavigate()
+    const [expenses, setExpenses] = useState<Expense[]>([])
 
     const getData = async () => {
         try {
-            const headers = new Headers();
-            headers.append("Authorization", "Bearer " + sessionStorage.getItem("token"));
+            const headers = new Headers()
+            headers.append("Authorization", "Bearer " + sessionStorage.getItem("token"))
             const response = await fetch(
                 "https://expenses-tracker-be.2024-josephp.dev.io-academy.uk/expenses",
                 {
                     method: "GET",
                     headers: headers,
                 }
-            );
+            )
             if (!response.ok) {
-                navigate("/login");
-                throw new Error(`Error: ${response.status}`);
+                navigate("/login")
+                throw new Error(`Error: ${response.status}`)
             }
-            const data = await response.json();
-            setExpenses(data);
+            const data = await response.json()
+            setExpenses(data)
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
-    };
+    }
 
     useEffect(() => {
-        getData();
-    }, []);
+        getData()
+    }, [])
 
     return (
         <div className="w-full max-w-4xl mx-auto p-6">
@@ -76,7 +76,7 @@ const ExpensesTable = () => {
             </div>
         </div>
         </div>
-    );
-};
+    )
+}
 
-export default ExpensesTable;
+export default ExpensesTable

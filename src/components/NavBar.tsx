@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 const NavBar = () => {
 
-    const handleClick = (e) => {
+    const handleClick = () => {
         localStorage.removeItem("token")
     }
 
@@ -12,8 +12,8 @@ const NavBar = () => {
             <div className="container mx-auto flex justify-between">
                 <h1 className="text-xl font-bold">Expense Tracker</h1>
                 <div className="space-x-4">
-                    <Link to="/">Dashboard</Link>
-                    <Link to="/">Add Expense</Link>
+                    <Link to="/home">Dashboard</Link>
+                    <Link to="/home">Add Expense</Link>
                     <Link to="/login" onClick={handleClick}>Logout</Link>
                 </div>
             </div>

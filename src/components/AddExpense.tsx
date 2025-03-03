@@ -1,8 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver} from "@hookform/resolvers/zod"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
 
 const schema = z.object({
     date: z.date(),
@@ -12,6 +11,11 @@ const schema = z.object({
 })
 
 type FormFields = z.infer<typeof schema>
+
+type Categories = {
+    id: number,
+    name: string,
+}
 
 const AddExpense = () => {
 
@@ -25,6 +29,30 @@ const AddExpense = () => {
     })
 
     const [successMessage, setSuccessMessage] = useState<string>("")
+
+    const [categories, setCategories] = useState<Categories[]>([])
+
+    const getCategories = async () => {
+        try {
+            const response: Response = await fetch (
+                "https://expenses-tracker-be.2024-josephp.dev.io-academy.uk/categories",
+                {
+                    method: "GET",
+                }
+            )
+            if (!response.ok) {
+                throw new Error("Error fetching categories.")
+            }
+            const data = await response.json()
+            setCategories(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        getCategories()
+    }, [])
 
     const onSubmit: SubmitHandler<FormFields> = async (data: FormFields): Promise<void> => {
         try {
@@ -97,10 +125,13 @@ const AddExpense = () => {
                             defaultValue="Select category"
                         >
                             {/*MAP OUT CATEGORIES HERE*/}
-                            <option value="food">Food</option>
-                            <option value="transport">Transport</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="utilities">Utilities</option>
+                            {
+                                categories.length > 0 ? (
+                                    categories.map((category) => (
+                                        <option key={category.id} value={category.name}>{category.name}</option>
+                                    ))
+                                ) : <option>No categories</option>
+                            }
                         </select>
                     </div>
 
