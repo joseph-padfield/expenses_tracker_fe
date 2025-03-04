@@ -4,9 +4,9 @@ import { zodResolver} from "@hookform/resolvers/zod"
 import { useState, useEffect } from "react"
 
 const schema = z.object({
-    date: z.date(),
+    date: z.string(),
     description: z.string(),
-    category: z.string(),
+    category: z.number(),
     amount: z.string(),
 })
 
@@ -17,13 +17,13 @@ type Categories = {
     name: string,
 }
 
-const AddExpense = () => {
+const AddExpense = ({ onExpenseAdded }: { onExpenseAdded: () => void }) => {
 
     const {
         register,
         handleSubmit,
         setError,
-        formState: { errors, isSubmitting }
+        formState: { errors }
     } = useForm<FormFields>({
         resolver: zodResolver(schema)
     })
@@ -54,15 +54,32 @@ const AddExpense = () => {
         getCategories()
     }, [])
 
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage("")
+            }, 1000)
+            return () => clearTimeout(timer)
+        }
+    }, [successMessage])
+
     const onSubmit: SubmitHandler<FormFields> = async (data: FormFields): Promise<void> => {
         try {
+            const payload = {
+                ...data,
+                amount: parseFloat(data.amount),
+            }
+
+            console.log("Submitting data: ", payload)
             const headers = new Headers()
             headers.append("Authorization", "Bearer " + sessionStorage.getItem("token"))
+            headers.append("Content-Type", "application/json")
             const response = await fetch (
                 "https://expenses-tracker-be.2024-josephp.dev.io-academy.uk/expenses",
                 {
                     method: "POST",
                     headers: headers,
+                    body: JSON.stringify(payload),
                 }
             )
             if (!response.ok) {
@@ -70,6 +87,7 @@ const AddExpense = () => {
             }
             if (response.status === 201) {
                 setSuccessMessage("Successfully created expense")
+                onExpenseAdded()
             }
         } catch (error) {
             console.error(error)
@@ -90,7 +108,7 @@ const AddExpense = () => {
                 {errors.root && <div className="text-red-500 text-center mb-4">{errors.root.message}</div>}
                 {successMessage && <div className="text-green-500 text-center mb-4">{successMessage}</div>}
 
-                <form className="flex flex-col gap-y-4">
+                <form className="flex flex-col gap-y-4" onSubmit={handleSubmit(onSubmit)}>
 
                     <div className="flex flex-col">
                         <label htmlFor="date" className="text-gray-700 font-medium mb-1">Date</label>
@@ -100,6 +118,7 @@ const AddExpense = () => {
                             type="date"
                             name="date"
                             id="date"
+                            required
                         />
                     </div>
 
@@ -112,23 +131,25 @@ const AddExpense = () => {
                             name="description"
                             id="description"
                             placeholder="Enter expense details"
+                            required
                         />
                     </div>
 
                     <div className="flex flex-col">
                         <label htmlFor="category" className="text-gray-700 font-medium mb-1">Category</label>
                         <select
-                            {...register("category")}
+                            {...register("category", { valueAsNumber: true})}
                             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                             name="category"
                             id="category"
-                            defaultValue="Select category"
+                            defaultValue=""
+                            required
                         >
-                            {/*MAP OUT CATEGORIES HERE*/}
+                            <option value="" disabled hidden>Select Category</option>
                             {
                                 categories.length > 0 ? (
                                     categories.map((category) => (
-                                        <option key={category.id} value={category.name}>{category.name}</option>
+                                        <option key={category.id} value={category.id}>{category.name}</option>
                                     ))
                                 ) : <option>No categories</option>
                             }
@@ -140,10 +161,12 @@ const AddExpense = () => {
                         <input
                             {...register("amount")}
                             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            type="text"
+                            type="number"
+                            step="0.01"
                             name="amount"
                             id="amount"
                             placeholder="Enter amount"
+                            required
                         />
                     </div>
 

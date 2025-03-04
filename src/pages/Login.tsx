@@ -52,6 +52,10 @@ const Login = () => {
                 sessionStorage.setItem("username", result.username)
             }
 
+            if (result.user_id) {
+                sessionStorage.setItem("user_id", result.user_id)
+            }
+
             if (result.token) {
                 sessionStorage.setItem("token", result.token)
                 setSuccessMessage("Login successful!")
